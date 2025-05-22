@@ -1,4 +1,5 @@
 **/__pycache__/
-secret.json
+secret.py
 env.py
 *.csv
+ Credentials.ipynb
