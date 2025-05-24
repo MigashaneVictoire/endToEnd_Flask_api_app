@@ -24,7 +24,9 @@ try:
         first_name VARCHAR(32),
         last_name VARCHAR(32),
         age INT,
-        gender CHAR
+        gender CHAR,
+        email VARCHAR(64),
+        username VARCHAR(33)
         );
         """)
 
@@ -59,7 +61,7 @@ try:
     # load the data from the csv files
     with open('data/students.csv', 'r') as f:
         next(f)  # Skip the header row
-        curr.copy_from(f, 'students', sep=',', columns=('student_id','first_name', 'last_name', 'age','gender'))
+        curr.copy_from(f, 'students', sep=',', columns=('student_id','first_name', 'last_name', 'age','gender','email', 'username'))
 
     with open('data/courses.csv', 'r') as f:
         next(f)  # Skip the header row
@@ -72,6 +74,18 @@ try:
     with open('data/credentials.csv', 'r') as f:
         next(f)  # Skip the header row
         curr.copy_from(f, 'credentials', sep=',', columns=('student_id','email', 'password'))
+    # --------------------- fetch data -----------------------
+    # curr.execute("""
+    #     SELECT first_name, last_name FROM students;
+    # """)
+    # student_names = curr.fetchall()
+    # print(student_names)
+    #
+    # curr.execute("""
+    #         SELECT course_name FROM courses;
+    #     """)
+    # course_names = curr.fetchall()
+    # print(course_names)
 
     #########################################################
     ###############______ Queries end Here ______############

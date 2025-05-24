@@ -23,7 +23,7 @@ def login():
         # check the credatials in the database
         username_status, username = auth.auth_login(user_email, user_password)
 
-        if username_status == True:
+        if username_status:
             # create user session
             session["user"] = username
             # redirect to home page
