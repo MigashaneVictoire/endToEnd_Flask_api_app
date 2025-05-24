@@ -1,6 +1,11 @@
 import pytest
 from flask_testing import TestCase
 from unittest.mock import patch
+
+# access all files in the main directory
+import sys
+sys.path.append("./")
+import main
 from main import app
 
 class TestMemberPortal(TestCase):
@@ -13,7 +18,7 @@ class TestMemberPortal(TestCase):
     
     ############### Test login #######################
     # test login function
-    def test_login_render_correct_templete_and_status(self):
+    def test_login_render_correct_templete_and_status(self) -> None:
         """
         Test if the /login route has done the floowing:
             - return HTTP status code 200 (OK)
@@ -29,7 +34,7 @@ class TestMemberPortal(TestCase):
         self.assert_template_used('login.html')
     
     @patch('main.auth.auth_login', return_value=(True, 'TestUser'))  # Mock the login logic (roll playing as the fuction)
-    def test_login_post_and_redirect_to_home_and_set_session(self, mock_auth):
+    def test_login_post_and_redirect_to_home_and_set_session(self, mock_auth) -> None:
         """
         Test POST to /login:
             - sends credentials
@@ -54,7 +59,7 @@ class TestMemberPortal(TestCase):
                 self.assertEqual(sess.get('user'), 'TestUser')
 
     ############## Test home #######################
-    def test_home_render_correct_templete_and_status(self):
+    def test_home_render_correct_templete_and_status(self) -> None:
         """
         Test if home/<username>  endpoint have done the floowing
             - return status code 200 (OK)
@@ -68,4 +73,6 @@ class TestMemberPortal(TestCase):
             response = c.get('/home/TestUser') # go to the /home endpoint with a GET request
             self.assert200(response) # is the response code 200?
             self.assert_template_used('home.html') # is the templete used 'home.html'
+
+
     

@@ -1,8 +1,9 @@
+from typing import Any
 import psycopg2
 import secret
 
 # Johnsonpass
-def auth_login(email:str, password:str):
+def auth_login(email:str, password:str) -> str | tuple[bool, Any] | tuple[bool, str]:
     """
     Goal: check the database for correct email and pass word
     param:
@@ -13,32 +14,32 @@ def auth_login(email:str, password:str):
                     False, if either is wrong
         - db_username: username of the logged-in user
     """
-    query = f"""
+    query = """
         SELECT username, password
         FROM students
         JOIN credentials USING (email)
-        WHERE email = '{email}';"""
+        WHERE email = %s;"""
 
     try:
-        db_username, db_password = retrieve_data_db_with_sql(query)[0]
-    except:
+        db_username, db_password = retrieve_data_db_with_sql(query, (email,))[0]
+    except IndexError:
         return "Email NOT found!"
-    finally:
-        # user was found in the database, and password is correct
-        if password == db_password:
-            return True, db_username
-        else:
-            # user was found in the database, but password is wrong
-            print("Incorrect Password!")
-            return False, "Incorrect Password!"
+
+    # user was found in the database, and password is correct
+    if password == db_password:
+        return True, db_username
+    else:
+        # user was found in the database, but password is wrong
+        return False, "Incorrect Password!"
 
 
 
-def retrieve_data_db_with_sql(query:str):
+def retrieve_data_db_with_sql(query:str, params:str=None) -> list[tuple[Any, ...]]:
     """
     Goal: Retrieve data from amazon aws server database with python
     param:
         - query: string sql query to be executed in the database
+        - params: optional argument that is the parameter to be injected into SQL query at "%s"
 
     """
     host, bd_name, bd_user, db_password = secret.db_connection()
@@ -54,7 +55,7 @@ def retrieve_data_db_with_sql(query:str):
         ##############------ Queries Start Here _____############
         #########################################################
 
-        curr.execute(f"""{query}""")
+        curr.execute(query,params) #always use parameterized queries. If you're injecting SQL queries
         query_result = curr.fetchall()
 
         #########################################################
@@ -70,6 +71,3 @@ def retrieve_data_db_with_sql(query:str):
         if connection:
             connection.close()
             return query_result
-
-# if __name__ == "__main__":
-    # auth_login("emmajohnson@gmail.com", "Johnsonpass")
